@@ -1,0 +1,83 @@
+ok, so, I'm thinking that for the first pass, they'll have to create an account before they can start a cart, basicly replace all add_to_cart buttons with "create account" or "login"
+user logs in:
+  we send any orders with a status of "in_progress" to the client and populate the cart from there
+
+user adds something to a cart:
+  we send the flower and quantity to server, create orders_flowers entry for current cart
+
+
+
+i think for unsigned in users when they start adding items to a cart we store it in a local object and a cookie.
+if they sign up, we make an in_progress cart for them from the cookie/local storage cart
+if they sign in there might be a conflict between the local cart and an already in progress one
+  I'm thinking we send the app the already in progress cart and offer the user options
+  pick a cart to overwrite
+  merge carts
+
+lets go through a users workflow
+
+navigate to site:
+  they'll see the landing page, a button to browse, a button to search, a button to sign in, a button to sign up
+
+they click browse:
+  load index of flowers
+  they click flower:
+    navigate to page for that flower
+    they see add to cart button
+    click add to cart button:
+      if signed in send post to server
+      if not signed in start up a local cart object/cookie
+
+they click search:
+  navigate to search page:
+    they see input for flower name and button to start search
+    they enter text and hit search:
+      send search field back to server, do query for flowers with names like query, return results
+
+they click sign_in:
+  go to sign in page
+  submit sign in:
+    sign in
+    check to see if theres an in progress cart on server
+    send it back
+    if local also has an in progress cart, prompt user to pick a cart or merge them
+    they pick local cart:
+      send local cart up to server and replace the in_progress one with it
+    they pick server cart:
+      replace local cart
+    they merge:
+      send local cart to server, perform magic to merge
+
+they click cart icon
+  get in progress cart
+  display contents of cart
+  display controls to remove or adjust quantity of flowers in cart
+  display purchase button
+  click plus/minus for flowers
+    send post to orders_flowers update
+  click remove for flowers
+    send delete to orders_flowers
+  click purchase
+    send get tp orders#purchase
+    redirect to purchase page
+      show cart deets again
+      show payment method select (list existing cards as well as form for new cards)
+      make new card:
+        enter details
+        post to stripe
+        get stripe user and stripe card
+        send to users#addCard (stripe_user, stripe_card)
+      they pick a payment method
+        redirect to shipping address page
+        get index of users contacts
+        show button/form to add new contact
+        show "next" button
+        click next button
+          go to confirm page
+          can choose to go back to a step
+          can confirm
+          confirms
+            send post to server with all the payment and shipping jazz
+
+also, add a drop down for signed in users to let them change settings, add contacts, add cards, view purchase history
+
