@@ -4,6 +4,10 @@ class OrdersFlower < ActiveRecord::Base
 
   before_save :handleCost#, :handleFlowerQuantity
 
+  validates :flower, :order, presence: true
+  validates :quantity, numericality: {only_integer: true, greater_than: 0}
+  validates :flower, uniqueness: { scope: :order_id }
+
   #so, there will be the capacity for a user to adjust the quantity of what he's added to his order, i'll need to put something in so the cost is only adjusted while the orders_flowers' order is still in_progress
   def handleCost
     self.cost = self.quantity * self.flower.price
